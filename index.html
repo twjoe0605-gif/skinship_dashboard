@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>스킨십 영어표현 대시보드</title>
+<title>Konglish vs English</title>
 <style>
   * { box-sizing: border-box; }
   body { font-family:'Malgun Gothic',sans-serif; background:linear-gradient(135deg,#a8edea 0%,#fed6e3 100%); margin:0; padding:20px; }
@@ -15,6 +15,16 @@
   .vocab-item { background:#fff5f8; border:2px solid #ffb6c1; border-radius:12px; padding:10px; text-align:center; }
   .vocab-eng { font-weight:bold; color:#d6336c; }
   .vocab-kor { color:#555; font-size:0.9em; margin-top:4px; }
+  .kong-list { display:flex; flex-direction:column; gap:10px; }
+  .kong-item { background:white; border-radius:16px; padding:14px 16px; box-shadow:0 4px 10px rgba(0,0,0,0.1); border-left:6px solid #d6336c; }
+  .kong-kor { font-weight:bold; color:#5b3a8e; margin-bottom:8px; }
+  .kong-row { display:flex; gap:8px; padding:2px 0; }
+  .kong-mark { flex-shrink:0; font-weight:bold; }
+  .kong-x .kong-mark { color:#e03131; }
+  .kong-o .kong-mark { color:#2b8a3e; }
+  .kong-x .kong-eng { color:#e03131; text-decoration:line-through; text-decoration-color:rgba(224,49,49,0.45); }
+  .kong-o .kong-eng { color:#2b8a3e; font-weight:bold; }
+  .kong-note { color:#868e96; font-size:0.85em; margin-top:7px; padding-top:7px; border-top:1px dashed #dee2e6; }
   .dialogue-card { background:white; border-radius:16px; padding:16px; margin-bottom:14px; box-shadow:0 4px 10px rgba(0,0,0,0.1); border-left:6px solid #74c0fc; }
   .dhead { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px; }
   .dtitle { font-weight:bold; color:#1971c2; }
@@ -44,8 +54,11 @@
 </head>
 <body>
 <div class="container">
-  <h1>🤗 스킨십 영어표현 대시보드 🤗</h1>
-  <p class="subtitle">중학생을 위한 쉬운 영어 표현 배우기</p>
+  <h1>Konglish vs English</h1>
+  <p class="subtitle">우리가 자주 쓰는 Broken English 올바른 영어 표현 배우기</p>
+
+  <div class="section-title">🔄 콩글리시 → 올바른 영어</div>
+  <div id="konglish" class="kong-list"></div>
 
   <div class="section-title">📚 오늘의 단어</div>
   <div class="vocab-grid">
@@ -66,6 +79,64 @@
 <canvas id="confetti"></canvas>
 
 <script>
+/* ================= 콩글리시 교정 ================= */
+const konglish = [
+  { kor:"그는 스킨십을 좋아해",
+    x:"He likes skinship.", o:"He's touchy-feely.",
+    note:"skinship 은 영어에 없는 말이에요. physical affection 이라고도 해요." },
+  { kor:"핸드폰 좀 빌려줄래?",
+    x:"Can I borrow your hand phone?", o:"Can I borrow your cell phone?",
+    note:"영국에서는 mobile phone 이라고 해요." },
+  { kor:"어제 미팅 했어",
+    x:"I had a meeting yesterday.", o:"I went on a blind date yesterday.",
+    note:"영어 meeting 은 '회의'라는 뜻이에요. 소개팅은 blind date." },
+  { kor:"시험에서 컨닝하지 마",
+    x:"Don't do cunning on the test.", o:"Don't cheat on the test.",
+    note:"cunning 은 '교활한'이라는 형용사예요. 부정행위는 cheating." },
+  { kor:"아이쇼핑 하러 가자",
+    x:"Let's go eye shopping.", o:"Let's go window shopping.",
+    note:"눈(eye)이 아니라 진열창(window)을 구경한다고 표현해요." },
+  { kor:"원샷!",
+    x:"One shot!", o:"Bottoms up!",
+    note:"잔을 비운다는 뜻으로 Chug! 도 써요." },
+  { kor:"이건 서비스예요",
+    x:"This is service.", o:"This one's on the house.",
+    note:"공짜로 주는 건 on the house 또는 complimentary 예요." }
+];
+
+const kongList = document.getElementById('konglish');
+
+konglish.forEach(k => {
+  const item = document.createElement('div');
+  item.className = 'kong-item';
+
+  const kor = document.createElement('div');
+  kor.className = 'kong-kor';
+  kor.textContent = k.kor;
+  item.appendChild(kor);
+
+  [['x','❌',k.x],['o','⭕',k.o]].forEach(([cls, mark, text]) => {
+    const row = document.createElement('div');
+    row.className = 'kong-row kong-' + cls;
+    const m = document.createElement('span');
+    m.className = 'kong-mark';
+    m.textContent = mark;
+    const eng = document.createElement('span');
+    eng.className = 'kong-eng';
+    eng.textContent = text;
+    row.appendChild(m);
+    row.appendChild(eng);
+    item.appendChild(row);
+  });
+
+  const note = document.createElement('div');
+  note.className = 'kong-note';
+  note.textContent = k.note;
+  item.appendChild(note);
+
+  kongList.appendChild(item);
+});
+
 /* ================= 대화 데이터 ================= */
 /* who = 대화 순서(아바타 색), g = 화자 성별(목소리). 둘은 별개다. */
 const dialogues = [
